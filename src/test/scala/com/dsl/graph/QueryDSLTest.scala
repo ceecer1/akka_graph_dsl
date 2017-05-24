@@ -106,16 +106,16 @@ class QueryDSLTest extends TestKit(ActorSystem("akka_graph_dsl_test", TestConfig
     }
 
     "List all business with more than Z employees" in {
-      val businessSet = Future(Set(b1, b2, b3))
-      val allBusinessesMoreThanZEmployees = businessSet.flatMap(getEntitiesHavingEdgeLimit(_, "employed", 1))
+      val businessSet = Set(b1, b2, b3)
+      val allBusinessesMoreThanZEmployees = getEntitiesHavingEdgeLimit(businessSet, "employed", 1)
       val idSet = Await.result(allBusinessesMoreThanZEmployees, 5 second)
 
       idSet.size should be(1)
     }
 
     "List every person who has friends with employed relatives" in {
-      val businessSet = Future(Set(b1, b2, b3))
-      val personsFriendsWithEmployedRelatives = businessSet.flatMap(getSubscribedRelationshipOfEntities(_, "employed"))
+      val businessSet = Set(b1, b2, b3)
+      val personsFriendsWithEmployedRelatives = getSubscribedRelationshipOfEntities(businessSet, "employed")
                                                       .flatMap(getBiDirectionalRelationshipOfEntities(_, "relativeOf"))
                                                       .flatMap(getBiDirectionalRelationshipOfEntities(_, "friendOf"))
       val idSet = Await.result(personsFriendsWithEmployedRelatives, 5 second)
@@ -124,11 +124,11 @@ class QueryDSLTest extends TestKit(ActorSystem("akka_graph_dsl_test", TestConfig
     }
 
     "List every person who has kinds with friends with employed relatives" in {
-      val businessSet = Future(Set(b1, b2, b3))
-      val personsFriendsWithEmployedRelatives = businessSet.flatMap(getSubscribedRelationshipOfEntities(_, "employed")
+      val businessSet = Set(b1, b2, b3)
+      val personsFriendsWithEmployedRelatives = getSubscribedRelationshipOfEntities(businessSet, "employed")
                                                           .getBiDirectionalRelationshipOfEntities("relativeOf")
                                                           .getBiDirectionalRelationshipOfEntities("friendOf")
-                                                          .getBiDirectionalRelationshipOfEntities("kindOf"))
+                                                          .getBiDirectionalRelationshipOfEntities("kindOf")
       val idSet = Await.result(personsFriendsWithEmployedRelatives, 5 second)
 
       idSet.head shouldEqual(p7)

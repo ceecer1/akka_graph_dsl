@@ -169,7 +169,7 @@ trait QueryDSL { self =>
   protected def getEntitiesHavingEdgeLimit[ResourceIDType <: ID, ResourceType <: Resource](
                                                                                             entities: Set[ResourceIDType],
                                                                                             edgeName: String,
-                                                                                            limit: Int)
+                                                                                            limit: => Int)
                                                                                           (implicit resolver: ActorRef, ec: ExecutionContext): Future[Set[ID]] = {
 
     val seqSet: Seq[Set[_ <: ID]] = Seq()
@@ -185,10 +185,7 @@ trait QueryDSL { self =>
     }
     val futSeq = Future.sequence(intermediate)
 
-    val res = futSeq.map(s => s.foldLeft(seqSet)(_ ++ _))
-    val result = res.map { s =>
-      s.foldLeft(set)(_ ++ _)
-    }
+    val result = futSeq.map(s => s.foldLeft(seqSet)(_ ++ _)).map(s => s.foldLeft(set)(_ ++ _))
 
     result
 
@@ -224,10 +221,7 @@ trait QueryDSL { self =>
     }
     val futSeq = Future.sequence(intermediate)
 
-    val res = futSeq.map(s => (s.foldLeft(seqSet)(_ ++ _)))
-    val result = res.map { s =>
-      s.foldLeft(set)(_ ++ _)
-    }
+    val result = futSeq.map(s => (s.foldLeft(seqSet)(_ ++ _))).map(s => s.foldLeft(set)(_ ++ _))
 
     result
 
@@ -267,10 +261,7 @@ trait QueryDSL { self =>
     }
     val futSeq = Future.sequence(intermediate)
 
-    val res = futSeq.map(s => (s.foldLeft(seqSet)(_ ++ _)))
-    val result = res.map { s =>
-      s.foldLeft(set)(_ ++ _)
-    }
+    val result = futSeq.map(s => (s.foldLeft(seqSet)(_ ++ _))).map(s => s.foldLeft(set)(_ ++ _))
 
     result
 
